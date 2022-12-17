@@ -1,4 +1,15 @@
-const db = require('./db');
+const mysql = require('mysql');
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "Daniilo",
+    password: "qwerty",
+    database: "todo"
+});
+
+db.connect(function(err) {
+    if (err) throw err;
+});
 
 const getTodos = (request, response) => {
 
@@ -53,9 +64,24 @@ const deleteTodo = (request, response) => {
     })
 }
 
+const getUser = (request, response) => {
+
+    let username = request.body.username
+    let password = request.body.password
+    db.query('select * from users where Username = ? and Password = ?', [username, password] , (error, results) => {
+        if (error) {
+            throw error
+        }
+        console.log(results)
+        // response.send(request.body)
+    })
+}
+
 module.exports = {
     getTodos,
     createTodo,
     updateTodo,
-    deleteTodo
+    deleteTodo,
+    getUser
 }
+
