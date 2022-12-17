@@ -17,6 +17,7 @@ const getTodos = (request, response) => {
         if (error) {
             throw error
         }
+        console.log(results)
         response.json(results)
     })
 }
