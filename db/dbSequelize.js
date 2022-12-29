@@ -84,10 +84,9 @@ const authorizeUser = (req, res) => {
     const credentials = {
         userID: req.body.id,
     };
-    console.log(credentials)
     todos.findAll({ where: [credentials] })
         .then(data => {
-                res.send(data)
+            res.send(data)
         })
         .catch(err => {
             res.status(500).send({
@@ -105,20 +104,12 @@ const getTodos = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving tutorials."
+                    err.message || "Some error occurred while retrieving todos."
             });
         });
 }
 
 const createTodo = (req, res) => {
-
-    // Validate request
-    // if (!req.body.title) {
-    //     res.status(401).send({
-    //         message: "Content can not be empty!"
-    //     });
-    //     return;
-    // }
 
     const todo = {
         title: req.body.title,
@@ -127,64 +118,47 @@ const createTodo = (req, res) => {
     };
 
     todos.create(todo)
-        .then(data => {
-            res.send(data);
+        .then( ()=> {
+            res.sendStatus(200);
         })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while creating the Tutorial."
-            });
+        .catch( () => {
+            res.sendStatus(500);
         });
 };
 
 const updateTodo = (req, res) => {
+
     const id = req.params.id;
 
     todos.update(req.body, {
         where: { id: id }
     })
-        .then(num => {
-            if (num === 1) {
-                res.send({
-                    message: "Todo was updated successfully."
-                });
-            } else {
-                res.send({
-                    message: "Cannot update todo with id=${id}."
-                });
-            }
+        .then( ()=> {
+            res.sendStatus(200);
         })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating Tutorial with id=" + id
-            });
+        .catch( () => {
+            res.sendStatus(500);
         });
 };
 
 const deleteTodo = (req, res) => {
+
     const id = req.params.id;
-    console.log(id)
+
     todos.destroy({
         where: { id: id }
     })
-        .then(num => {
-            if (num === 1) {
-                res.send({
-                    message: "Todo was deleted successfully!"
-                });
-            } else {
-                res.send({
-                    message: `Cannot delete todo with id=${id}`
-                });
-            }
+        .then( ()=> {
+            res.sendStatus(200);
         })
-        .catch(err => {
-            res.status(500).send({
-                message: "Could not delete Tutorial with id=" + id
-            });
+        .catch(() => {
+            res.sendStatus(500);
         });
 };
+
+const getLogs = (req, res) => {
+
+}
 
 module.exports = {
     getTodos,
