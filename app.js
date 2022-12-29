@@ -43,6 +43,7 @@ app.get('/', queries.getTodos)
 app.post('/', queries.createTodo)
 app.put('/:id', queries.updateTodo)
 app.delete('/:id', queries.deleteTodo)
-// app.post('/login', queries.getUser)
+app.post('/login', queries.validateUser)
+app.post('/user', queries.authorizeUser)
 
 module.exports = app;

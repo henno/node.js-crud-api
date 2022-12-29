@@ -16,7 +16,6 @@ sequelize.authenticate().then(() => {
     console.error('Unable to connect to the database: ', error);
 });
 
-
 const todos = sequelize.define("sequelizeTodos", {
     id: {
         type: DataTypes.INTEGER,
@@ -28,8 +27,26 @@ const todos = sequelize.define("sequelizeTodos", {
     },
     completed: {
         type: DataTypes.STRING,
+    },
+    userID: {
+        type: DataTypes.INTEGER
     }
 });
+
+const users = sequelize.define("sequelizeUsers", {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    username: {
+        type: DataTypes.STRING,
+    },
+    password: {
+        type: DataTypes.STRING,
+    },
+},
+{timestamps: false});
 
 sequelize.sync()
     .then(() => {
@@ -38,6 +55,47 @@ sequelize.sync()
     .catch((err) => {
         console.log("Failed to sync db: " + err.message);
     });
+
+const validateUser = (req, res) => {
+    const credentials = {
+        username: req.body.username,
+        password: req.body.password,
+    };
+    users.findOne({ where: [credentials] })
+        .then(data => {
+            if (data === null){
+                res.status(401).send(
+                    false
+                )
+            }
+            else {
+                res.send(data)
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving users."
+            });
+        });
+}
+
+const authorizeUser = (req, res) => {
+    const credentials = {
+        userID: req.body.id,
+    };
+    console.log(credentials)
+    todos.findAll({ where: [credentials] })
+        .then(data => {
+                res.send(data)
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving users."
+            });
+        });
+}
 
 const getTodos = (req, res) => {
     todos.findAll()
@@ -55,17 +113,17 @@ const getTodos = (req, res) => {
 const createTodo = (req, res) => {
 
     // Validate request
-    if (!req.body.title) {
-        res.status(400).send({
-            message: "Content can not be empty!"
-        });
-        return;
-    }
+    // if (!req.body.title) {
+    //     res.status(401).send({
+    //         message: "Content can not be empty!"
+    //     });
+    //     return;
+    // }
 
-    // Create a Tutorial
     const todo = {
         title: req.body.title,
         completed: req.body.completed,
+        userID: req.body.userID
     };
 
     todos.create(todo)
@@ -93,7 +151,7 @@ const updateTodo = (req, res) => {
                 });
             } else {
                 res.send({
-                    message: "Cannot uodate todo with id=${id}."
+                    message: "Cannot update todo with id=${id}."
                 });
             }
         })
@@ -106,7 +164,7 @@ const updateTodo = (req, res) => {
 
 const deleteTodo = (req, res) => {
     const id = req.params.id;
-
+    console.log(id)
     todos.destroy({
         where: { id: id }
     })
@@ -128,13 +186,12 @@ const deleteTodo = (req, res) => {
         });
 };
 
-
-
-
 module.exports = {
     getTodos,
     createTodo,
     updateTodo,
     deleteTodo,
-    // getUser
+    validateUser,
+    authorizeUser
 }
+
