@@ -5,8 +5,10 @@ const sequelize = new Sequelize(
     'todo',
     'Daniilo',
     'qwerty',
-    {        host: 'Localhost',
-        dialect: 'mysql'
+    {
+        host: 'Localhost',
+        dialect: 'mysql',
+        logging: false
     }
 );
 
@@ -55,6 +57,40 @@ sequelize.sync()
     .catch((err) => {
         console.log("Failed to sync db: " + err.message);
     });
+
+
+const logs = [];
+
+const saveLogs = (data, method) => {
+    const subLog = []
+    let date = JSON.stringify(data.get('updatedAt'))
+    let newDate = date.replaceAll(/T/g, ", ").replaceAll(/"/g, "")
+    subLog.push(newDate.slice(0, 17), method, data.get('userID'), data.get('title'), data.get('completed'), data.previous('title'), data.previous('completed'))
+    logs.push(subLog)
+}
+
+todos.beforeCreate((instance, options) => {
+    const method = 'POST'
+    saveLogs(instance, method)
+    }
+);
+
+todos.beforeUpdate((instance, options) => {
+    const method = 'PUT'
+    saveLogs(instance, method)
+    }
+);
+
+todos.beforeDestroy((instance, options) => {
+    const method = 'DELETE'
+    saveLogs(instance, method)
+    }
+);
+
+const getLogs = (req, res) => {
+    res.send(logs);
+};
+
 
 const validateUser = (req, res) => {
     const credentials = {
@@ -118,8 +154,8 @@ const createTodo = (req, res) => {
     };
 
     todos.create(todo)
-        .then( ()=> {
-            res.sendStatus(200);
+        .then( (data)=> {
+            res.send(data);
         })
         .catch( () => {
             res.sendStatus(500);
@@ -131,10 +167,11 @@ const updateTodo = (req, res) => {
     const id = req.params.id;
 
     todos.update(req.body, {
-        where: { id: id }
+        where: { id: id },
+        individualHooks: true
     })
-        .then( ()=> {
-            res.sendStatus(200);
+        .then( (data)=> {
+            res.send(req.body);
         })
         .catch( () => {
             res.sendStatus(500);
@@ -146,19 +183,16 @@ const deleteTodo = (req, res) => {
     const id = req.params.id;
 
     todos.destroy({
-        where: { id: id }
+        where: { id: id },
+        individualHooks: true
     })
-        .then( ()=> {
-            res.sendStatus(200);
+        .then( (data)=> {
+            res.send("Ok");
         })
         .catch(() => {
             res.sendStatus(500);
         });
 };
-
-const getLogs = (req, res) => {
-
-}
 
 module.exports = {
     getTodos,
@@ -166,6 +200,7 @@ module.exports = {
     updateTodo,
     deleteTodo,
     validateUser,
-    authorizeUser
+    authorizeUser,
+    getLogs
 }
 
