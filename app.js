@@ -1,11 +1,29 @@
 require('dotenv').config();
 const express = require('express');
+const rateLimit = require("express-rate-limit");
 const cors = require('cors')
 const app = express();
 const http = require('http');
 const { Server } = require("socket.io");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+//rate limiter
+const limitLogin = rateLimit({
+    max: 5,
+    windowMs: 2 * 60 * 1000,
+    handler: function (req, res) {
+        return res.status(429).send("Too many requests")
+    }
+});
+
+const limitCRUD = rateLimit({
+    max: 10,
+    windowMs: 60 * 1000,
+    handler: function (req, res) {
+        return res.status(429).send("Too many requests")
+    }
+});
 
 //choose db
 const queries = require(process.env.dbSequelize)
@@ -40,10 +58,10 @@ io.on('connection', (socket) => {
 });
 
 app.get('/', queries.getTodos)
-app.post('/', queries.createTodo)
-app.put('/:id', queries.updateTodo)
-app.delete('/:id', queries.deleteTodo)
-app.post('/login', queries.validateUser)
+app.post( '/', limitCRUD, queries.createTodo)
+app.put('/:id', limitCRUD, queries.updateTodo)
+app.delete('/:id', limitCRUD, queries.deleteTodo)
+app.post('/login', limitLogin, queries.validateUser)
 app.post('/user', queries.authorizeUser)
 app.get('/logs', queries.getLogs)
 
