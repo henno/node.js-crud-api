@@ -26,7 +26,7 @@ const limitCRUD = rateLimit({
 });
 
 //choose db
-const queries = require(process.env.dbSequelize)
+const queries = require(process.env.dbPrisma)
 
 //http
 const server = http.createServer(app)
