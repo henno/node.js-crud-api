@@ -154,8 +154,8 @@ const createTodo = (req, res) => {
     };
 
     todos.create(todo)
-        .then( (data)=> {
-            res.send(data);
+        .then(()=> {
+            res.sendStatus(201);
         })
         .catch( () => {
             res.sendStatus(500);
@@ -170,8 +170,8 @@ const updateTodo = (req, res) => {
         where: { id: id },
         individualHooks: true
     })
-        .then( (data)=> {
-            res.send(req.body);
+        .then(()=> {
+            res.sendStatus(201);
         })
         .catch( () => {
             res.sendStatus(500);
@@ -186,8 +186,8 @@ const deleteTodo = (req, res) => {
         where: { id: id },
         individualHooks: true
     })
-        .then( (data)=> {
-            res.send("Ok");
+        .then(()=> {
+            res.sendStatus(202);
         })
         .catch(() => {
             res.sendStatus(500);
