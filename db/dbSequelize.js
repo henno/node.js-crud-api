@@ -58,32 +58,35 @@ sequelize.sync()
         console.log("Failed to sync db: " + err.message);
     });
 
-
+// logging
 const logs = [];
 
-const saveLogs = (data, method) => {
+const saveLogs = (data, method, firstValue, secondValue) => {
     const subLog = []
+
     let date = JSON.stringify(data.get('updatedAt'))
     let newDate = date.replaceAll(/T/g, ", ").replaceAll(/"/g, "")
-    subLog.push(newDate.slice(0, 17), method, data.get('userID'), data.get('title'), data.get('completed'), data.previous('title'), data.previous('completed'))
+
+    subLog.push(newDate.slice(0, 17), method, data.get("userID"), firstValue, secondValue)
+
     logs.push(subLog)
 }
 
 todos.beforeCreate((instance, options) => {
     const method = 'POST'
-    saveLogs(instance, method)
+    saveLogs(instance, method, 'Added ' + JSON.stringify(instance.get("title")),'Added ' + JSON.stringify(instance.get("completed")))
     }
 );
 
 todos.beforeUpdate((instance, options) => {
     const method = 'PUT'
-    saveLogs(instance, method)
+    saveLogs(instance, method, 'Changed ' + JSON.stringify(instance.previous("title")) + ' to ' + JSON.stringify(instance.get("title")),'Changed ' + JSON.stringify(instance.previous("completed")) + ' to ' + JSON.stringify(instance.get("completed")))
     }
 );
 
 todos.beforeDestroy((instance, options) => {
     const method = 'DELETE'
-    saveLogs(instance, method)
+    saveLogs(instance, method, 'Deleted ' + JSON.stringify(instance.previous("title")), 'Deleted ' + JSON.stringify(instance.previous("completed")))
     }
 );
 
@@ -91,6 +94,7 @@ const getLogs = (req, res) => {
     res.send(logs);
 }
 
+// authorization
 const jwt = require("jsonwebtoken");
 const jwt_secret =
     "goK!pusp6ThEdURUtRenOwUhAsWUCLheBazl!uJLPlS8EbreWLdrupIwabRAsiBu";
@@ -101,6 +105,7 @@ function checkToken(token) {
     return sessionToken === token;
 }
 
+// endpoints
 const validateUser = (req, res) => {
     const credentials = {
         username: req.body.username,
