@@ -89,8 +89,17 @@ todos.beforeDestroy((instance, options) => {
 
 const getLogs = (req, res) => {
     res.send(logs);
-};
+}
 
+const jwt = require("jsonwebtoken");
+const jwt_secret =
+    "goK!pusp6ThEdURUtRenOwUhAsWUCLheBazl!uJLPlS8EbreWLdrupIwabRAsiBu";
+
+let sessionToken;
+
+function checkToken(token) {
+    return sessionToken === token;
+}
 
 const validateUser = (req, res) => {
     const credentials = {
@@ -105,7 +114,9 @@ const validateUser = (req, res) => {
                 )
             }
             else {
-                res.send(data)
+                let token = jwt.sign({ UserID: data.id }, jwt_secret);
+                sessionToken = token
+                res.send({id: data.id, token: token})
             }
         })
         .catch(err => {
@@ -117,19 +128,26 @@ const validateUser = (req, res) => {
 }
 
 const authorizeUser = (req, res) => {
-    const credentials = {
-        userID: req.body.id,
-    };
-    todos.findAll({ where: [credentials] })
-        .then(data => {
-            res.send(data)
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving users."
+
+    if (checkToken(req.body.token) === true) {
+        const credentials = {
+            userID: req.body.id,
+        };
+        todos.findAll({ where: [credentials] })
+            .then(data => {
+                res.send(data)
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                        err.message || "Some error occurred while authorizing user."
+                });
             });
-        });
+    }
+    else {
+        res.sendStatus(401)
+    }
+
 }
 
 const getTodos = (req, res) => {
@@ -147,51 +165,69 @@ const getTodos = (req, res) => {
 
 const createTodo = (req, res) => {
 
-    const todo = {
-        title: req.body.title,
-        completed: req.body.completed,
-        userID: req.body.userID
-    };
+    if (checkToken(req.body.token) === true) {
 
-    todos.create(todo)
-        .then(()=> {
-            res.sendStatus(201);
-        })
-        .catch( () => {
-            res.sendStatus(500);
-        });
+        const todo = {
+            title: req.body.title,
+            completed: req.body.completed,
+            userID: req.body.userID
+        };
+
+        todos.create(todo)
+            .then(() => {
+                res.sendStatus(201);
+            })
+            .catch(() => {
+                res.sendStatus(500);
+            });
+    }
+    else {
+        res.sendStatus(401)
+    }
 };
 
 const updateTodo = (req, res) => {
 
-    const id = req.params.id;
+    if (checkToken(req.body.token) === true) {
 
-    todos.update(req.body, {
-        where: { id: id },
-        individualHooks: true
-    })
-        .then(()=> {
-            res.sendStatus(201);
+        const id = req.params.id;
+
+        todos.update(req.body, {
+            where: {id: id},
+            individualHooks: true
         })
-        .catch( () => {
-            res.sendStatus(500);
-        });
+            .then(() => {
+                res.sendStatus(201);
+            })
+            .catch(() => {
+                res.sendStatus(500);
+            });
+    }
+    else {
+        res.sendStatus(401)
+    }
 };
 
 const deleteTodo = (req, res) => {
 
-    const id = req.params.id;
+    if (checkToken(req.body.token) === true) {
 
-    todos.destroy({
-        where: { id: id },
-        individualHooks: true
-    })
-        .then(()=> {
-            res.sendStatus(202);
+        const id = req.params.id;
+
+        todos.destroy({
+            where: {id: id},
+            individualHooks: true
         })
-        .catch(() => {
-            res.sendStatus(500);
-        });
+            .then(() => {
+                res.sendStatus(202);
+            })
+            .catch(() => {
+                res.sendStatus(500);
+            });
+    }
+    else {
+        res.sendStatus(401)
+    }
 };
 
 module.exports = {
