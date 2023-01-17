@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
 );
 
 sequelize.authenticate().then(() => {
-    console.log('Connection has been established successfully.');
+    // console.log('Connection has been established successfully.');
 }).catch((error) => {
     console.error('Unable to connect to the database: ', error);
 });
@@ -52,7 +52,7 @@ const users = sequelize.define("sequelizeUsers", {
 
 sequelize.sync()
     .then(() => {
-        console.log("Synced sequelize db.");
+        // console.log("Synced sequelize db.");
     })
     .catch((err) => {
         console.log("Failed to sync db: " + err.message);
@@ -115,7 +115,7 @@ const validateUser = (req, res) => {
         .then(data => {
             if (data === null){
                 res.status(401).send(
-                    false
+                    "Unauthorized. Please try logging in again."
                 )
             }
             else {
@@ -127,7 +127,7 @@ const validateUser = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving users."
+                    err.message || "Internal server error"
             });
         });
 }
@@ -145,12 +145,14 @@ const authorizeUser = (req, res) => {
             .catch(err => {
                 res.status(500).send({
                     message:
-                        err.message || "Some error occurred while authorizing user."
+                        err.message || "Internal server error"
                 });
             });
     }
     else {
-        res.sendStatus(401)
+        res.status(401).send(
+            "Unauthorized. Please try logging in again."
+        )
     }
 
 }
@@ -163,7 +165,7 @@ const getTodos = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving todos."
+                    err.message || "Internal server error"
             });
         });
 }
@@ -180,15 +182,22 @@ const createTodo = (req, res) => {
 
         todos.create(todo)
             .then(() => {
-                res.sendStatus(201);
+                res.status(201).send(
+                    "Data created"
+                )
             })
             .catch(() => {
-                res.sendStatus(500);
+                res.status(500).send(
+                    "Internal server error"
+                )
             });
     }
     else {
-        res.sendStatus(401)
+        res.status(401).send(
+            "Unauthorized. Please try logging in again."
+        )
     }
+
 };
 
 const updateTodo = (req, res) => {
@@ -202,14 +211,20 @@ const updateTodo = (req, res) => {
             individualHooks: true
         })
             .then(() => {
-                res.sendStatus(201);
+                res.status(202).send(
+                    "Data updated"
+                )
             })
             .catch(() => {
-                res.sendStatus(500);
+                res.status(500).send(
+                    "Internal server error"
+                )
             });
     }
     else {
-        res.sendStatus(401)
+        res.status(401).send(
+            "Unauthorized. Please try logging in again."
+        )
     }
 };
 
@@ -224,14 +239,20 @@ const deleteTodo = (req, res) => {
             individualHooks: true
         })
             .then(() => {
-                res.sendStatus(202);
+                res.status(202).send(
+                    "Data updated"
+                )
             })
             .catch(() => {
-                res.sendStatus(500);
+                res.status(500).send(
+                    "Internal server error"
+                )
             });
     }
     else {
-        res.sendStatus(401)
+        res.status(401).send(
+            "Unauthorized. Please try logging in again."
+        )
     }
 };
 
