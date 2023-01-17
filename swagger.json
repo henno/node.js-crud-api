@@ -1,0 +1,460 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "NodeJS API",
+    "version": "1.0.0",
+    "description": "API that is used to perform CRUD operations for a todolist application in the OpenAPI 3.0 specification.",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "Tanel Märjama",
+      "email": "tanel.marjama@voco.ee"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "summary": "Get all todo items.",
+      "description": "Endpoint to get all the todo items.",
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/todos"
+                  }
+                }
+              }
+            },
+            "description": "Got all todos successfully. "
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "unexpected error"
+          }
+        },
+        "operationId": "getAllTodos",
+        "summary": "Get all todo items.",
+        "description": "Gets all the todo items from the server."
+      },
+      "post": {
+        "requestBody": {
+          "description": "Request body to add a new todo item.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createNewTodo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "New todolist item created."
+          },
+          "401": {
+            "description": "User is not authorized."
+          },
+          "429": {
+            "description": "Too many requests."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "createNewTodo",
+        "summary": "Add a new todo item.",
+        "description": "Sends a new todo item to the server."
+      }
+    },
+    "/user": {
+      "summary": "Get user todo list.",
+      "description": "Gets a specific users todolist.",
+      "post": {
+        "requestBody": {
+          "description": "Request body to get specific users todo list.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userTodos"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/todos"
+                }
+              }
+            },
+            "description": "User todolist fetched."
+          },
+          "401": {
+            "description": "Unauthorized to get the list."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "getUserTodos",
+        "summary": "Get user todos.",
+        "description": "Get sepcific users todo list from the server."
+      }
+    },
+    "/{id}": {
+      "summary": "Edit or delete the todo items.",
+      "description": "Endpoint to edit or delete the todo items.",
+      "put": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateTodo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Todo item created."
+          },
+          "401": {
+            "description": "User is unauthorized to update todo."
+          },
+          "429": {
+            "description": "Too many requests."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "updateTodoItem",
+        "summary": "Update todos.",
+        "description": "Send a request to server to update a single todo item."
+      },
+      "delete": {
+        "responses": {
+          "202": {
+            "description": "Todo item has been deleted."
+          },
+          "401": {
+            "description": "User is not authorized to delete the todo item."
+          },
+          "429": {
+            "description": "Too many requests."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "deleteTodoItem",
+        "summary": "Delete todo.",
+        "description": "Send a request to server to delete a todo item."
+      },
+      "parameters": [
+        {
+          "examples": {
+            "Example of a id parameter": {
+              "value": "3"
+            }
+          },
+          "name": "id",
+          "description": "Parameter for id ",
+          "schema": {
+            "type": "integer"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/login": {
+      "summary": "Log user in.",
+      "description": "Endpoint to log user in and give authorization to edit the todo items.",
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userLoggedInResponse"
+                }
+              }
+            },
+            "description": "User logged in."
+          },
+          "401": {
+            "description": "No user found with those credentials."
+          },
+          "429": {
+            "description": "Too many requests."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "operationId": "authorizeUser",
+        "summary": "Log user in.",
+        "description": "Endpoint to log a user in."
+      }
+    },
+    "/logs": {
+      "summary": "Get server logs.",
+      "description": "Endpoint to get logs from server.",
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/logs"
+                }
+              }
+            },
+            "description": "Logs received."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "operationId": "getServerLogs",
+        "summary": "Get logs from the server.",
+        "description": "Get an array of logs from the server."
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "createNewTodo": {
+        "title": "Root Type for createNewTodo",
+        "description": "Data to create new todo item.",
+        "type": "object",
+        "properties": {
+          "title": {
+            "description": "Title value.",
+            "type": "string"
+          },
+          "completed": {
+            "description": "Completed value",
+            "type": "string"
+          },
+          "userID": {
+            "format": "int32",
+            "description": "User ID.",
+            "type": "integer"
+          }
+        },
+        "example": {
+          "title": "Jaluta koeraga ",
+          "completed": "Veel mitte",
+          "userID": 1
+        }
+      },
+      "updateTodo": {
+        "title": "Root Type for updateTodo",
+        "description": "Data to update the todo list.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "description": "ID of the task to be updated.",
+            "type": "integer"
+          },
+          "title": {
+            "description": "Title value.",
+            "type": "string"
+          },
+          "completed": {
+            "description": "Completed value.",
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": 143,
+          "title": "Jaluta koeraga ",
+          "completed": "Ei ole "
+        }
+      },
+      "todos": {
+        "description": "Array containing todo items",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique ID of the task.",
+            "type": "integer",
+            "example": "15"
+          },
+          "title": {
+            "description": "Title of the task.",
+            "type": "string",
+            "example": "Jaluta koeraga"
+          },
+          "completed": {
+            "description": "Completion status of the task.",
+            "type": "string",
+            "example": "Ei ole"
+          },
+          "createdAt": {
+            "description": "Date as string when the task was created.",
+            "type": "string",
+            "example": "2023-01-16T16:30:15.000Z"
+          },
+          "updatedAt": {
+            "description": "Date as string when the task was updated.",
+            "type": "string",
+            "example": "2023-01-17T16:30:15.000Z"
+          }
+        },
+        "example": {
+          "id": 5,
+          "title": "Mine õue",
+          "completed": "Ei ole",
+          "createdAt": "2023-01-16T16:30:15.000Z",
+          "updatedAt": "2023-01-17T16:30:15.000Z"
+        }
+      },
+      "userTodos": {
+        "title": "Root Type for userTodos",
+        "description": "Data to get user todo list.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "description": "ID of the user.",
+            "type": "integer"
+          }
+        },
+        "example": {
+          "id": 1
+        }
+      },
+      "login": {
+        "title": "Root Type for login",
+        "description": "Data to log in a user.",
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "Users username.",
+            "type": "string"
+          },
+          "password": {
+            "description": "Users password.",
+            "type": "string"
+          }
+        },
+        "example": {
+          "username": "User1",
+          "password": "Password1"
+        }
+      },
+      "logs": {
+        "title": "Root Type for logs",
+        "description": "An array of logs.",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "example": [
+          [
+            "2023-01-17, 01:25",
+            "PUT",
+            1,
+            "Changed \"Mine tuppa\" to \"Mine tuppa\"",
+            "Changed \"Jah\" to \"Ei\""
+          ],
+          [
+            "2023-01-16, 17:59",
+            "DELETE",
+            1,
+            "Deleted \"Mine õue\"",
+            "Deleted \"Ei ole \""
+          ],
+          [
+            "2023-01-17, 01:26",
+            "POST",
+            1,
+            "Added \"Tee midagi\"",
+            "Added \"Ei\""
+          ]
+        ]
+      },
+      "userLoggedInResponse": {
+        "title": "Root Type for userLoggedIn",
+        "description": "Data returned from the server if a user is logged in.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "description": "ID of the user.",
+            "type": "integer"
+          }
+        },
+        "example": {
+          "id": 1
+        }
+      }
+    },
+    "securitySchemes": {
+      "Authorization": {
+        "scheme": "bearer",
+        "type": "http",
+        "description": "Authorization for API"
+      }
+    }
+  }
+}
