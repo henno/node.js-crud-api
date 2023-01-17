@@ -102,7 +102,7 @@ const jwt_secret =
 let sessionToken;
 
 function checkToken(token) {
-    return sessionToken === token;
+    return sessionToken === token.replace('Bearer ', '');
 }
 
 // endpoints
@@ -134,7 +134,7 @@ const validateUser = (req, res) => {
 
 const authorizeUser = (req, res) => {
 
-    if (checkToken(req.body.token) === true) {
+    if (checkToken(req.headers.authorization) === true) {
         const credentials = {
             userID: req.body.id,
         };
@@ -170,7 +170,7 @@ const getTodos = (req, res) => {
 
 const createTodo = (req, res) => {
 
-    if (checkToken(req.body.token) === true) {
+    if (checkToken(req.headers.authorization) === true) {
 
         const todo = {
             title: req.body.title,
@@ -193,7 +193,7 @@ const createTodo = (req, res) => {
 
 const updateTodo = (req, res) => {
 
-    if (checkToken(req.body.token) === true) {
+    if (checkToken(req.headers.authorization) === true) {
 
         const id = req.params.id;
 
@@ -215,7 +215,7 @@ const updateTodo = (req, res) => {
 
 const deleteTodo = (req, res) => {
 
-    if (checkToken(req.body.token) === true) {
+    if (checkToken(req.headers.authorization) === true) {
 
         const id = req.params.id;
 
