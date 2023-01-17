@@ -8,6 +8,12 @@ const { Server } = require("socket.io");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+//swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 //rate limiter
 const limitLogin = rateLimit({
     max: 5,
@@ -26,7 +32,7 @@ const limitCRUD = rateLimit({
 });
 
 //choose db
-const queries = require(process.env.dbPrisma)
+const queries = require(process.env.dbSequelize)
 
 //http
 const server = http.createServer(app)
@@ -34,7 +40,7 @@ app.use(cors({
     origin: '*'
 }));
 const port = process.env.PORT || 3001;
-server.listen(3001, () => {
+server.listen(port, () => {
     console.log(`Server started on port: ${port}`);
 });
 
