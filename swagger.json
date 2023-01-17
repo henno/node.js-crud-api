@@ -36,6 +36,13 @@
             "description": "Got all todos successfully. "
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
             "description": "Internal server error."
           },
           "default": {
@@ -67,15 +74,33 @@
         },
         "responses": {
           "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/res201"
+                }
+              }
+            },
             "description": "New todolist item created."
           },
           "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error401"
+                }
+              }
+            },
             "description": "User is not authorized."
           },
-          "429": {
-            "description": "Too many requests."
-          },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
             "description": "Internal server error."
           }
         },
@@ -116,9 +141,23 @@
             "description": "User todolist fetched."
           },
           "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error401"
+                }
+              }
+            },
             "description": "Unauthorized to get the list."
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
             "description": "Internal server error."
           }
         },
@@ -147,16 +186,34 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Todo item created."
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/res202"
+                }
+              }
+            },
+            "description": "Todo updated."
           },
           "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error401"
+                }
+              }
+            },
             "description": "User is unauthorized to update todo."
           },
-          "429": {
-            "description": "Too many requests."
-          },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
             "description": "Internal server error."
           }
         },
@@ -172,15 +229,33 @@
       "delete": {
         "responses": {
           "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/res202"
+                }
+              }
+            },
             "description": "Todo item has been deleted."
           },
           "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error401"
+                }
+              }
+            },
             "description": "User is not authorized to delete the todo item."
           },
-          "429": {
-            "description": "Too many requests."
-          },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
             "description": "Internal server error."
           }
         },
@@ -236,12 +311,23 @@
             "description": "User logged in."
           },
           "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error401"
+                }
+              }
+            },
             "description": "No user found with those credentials."
           },
-          "429": {
-            "description": "Too many requests."
-          },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
             "description": "Internal server error."
           }
         },
@@ -447,6 +533,26 @@
         "example": {
           "id": 1
         }
+      },
+      "error401": {
+        "description": "Errormessage for unauthorized status.",
+        "type": "object",
+        "example": "\"Unauthorized. Please try logging in again.\""
+      },
+      "error500": {
+        "description": "Errormessage for internal server error.",
+        "type": "object",
+        "example": "\"Internal server error.\""
+      },
+      "res201": {
+        "description": "Response for http 201.",
+        "type": "object",
+        "example": "\"Data created\""
+      },
+      "res202": {
+        "description": "Response for http 202.",
+        "type": "object",
+        "example": "\"Data updated\""
       }
     },
     "securitySchemes": {
