@@ -38,7 +38,7 @@ const server = http.createServer(app)
 app.use(cors({
     origin: '*'
 }));
-const port = process.env.PORT || 3001;
+const port = 3001;
 server.listen(port, () => {
     console.log(`Server started on port: ${port}`);
 });
