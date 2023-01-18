@@ -1,2 +1,5 @@
 # Project exclude paths
 /node_modules/
+
+# Dotenv environment variables file
+.env
