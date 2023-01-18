@@ -11,7 +11,6 @@ app.use(express.urlencoded({ extended: false }));
 //swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
-
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //rate limiter

@@ -528,10 +528,15 @@
             "format": "int32",
             "description": "ID of the user.",
             "type": "integer"
+          },
+          "token": {
+            "description": "Token for user authentication",
+            "type": "string"
           }
         },
         "example": {
-          "id": 1
+          "id": 1,
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImlhdCI6MTY3NDA0NTA2M30.uNP-MYOO2r0pnPBsblJxkZ0Eu85I532oYQR66wMWE2s"
         }
       },
       "error401": {

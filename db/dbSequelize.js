@@ -52,7 +52,7 @@ const users = sequelize.define("sequelizeUsers", {
 
 sequelize.sync()
     .then(() => {
-        // console.log("Synced sequelize db.");
+        console.log("Synced sequelize db.");
     })
     .catch((err) => {
         console.log("Failed to sync db: " + err.message);
@@ -74,13 +74,24 @@ const saveLogs = (data, method, firstValue, secondValue) => {
 
 todos.beforeCreate((instance, options) => {
     const method = 'POST'
+    console.log(instance.get("title"))
+    if(instance.get("title") === "" && instance.get("completed") === "") {
+        return null
+    }
+    else {
     saveLogs(instance, method, 'Added ' + JSON.stringify(instance.get("title")),'Added ' + JSON.stringify(instance.get("completed")))
+    }
     }
 );
 
 todos.beforeUpdate((instance, options) => {
     const method = 'PUT'
+    if(instance.previous("title") === instance.get("title") && instance.previous("completed") === instance.get("completed")) {
+        return null
+    }
+    else {
     saveLogs(instance, method, 'Changed ' + JSON.stringify(instance.previous("title")) + ' to ' + JSON.stringify(instance.get("title")),'Changed ' + JSON.stringify(instance.previous("completed")) + ' to ' + JSON.stringify(instance.get("completed")))
+    }
     }
 );
 
@@ -102,7 +113,12 @@ const jwt_secret =
 let sessionToken;
 
 function checkToken(token) {
-    return sessionToken === token.replace('Bearer ', '');
+    if (token === undefined){
+        return null
+    }
+    else {
+        return sessionToken === token.replace('Bearer ', '');
+    }
 }
 
 // endpoints
