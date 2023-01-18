@@ -2,11 +2,11 @@ const Sequelize = require("sequelize");
 const {DataTypes} = require("sequelize");
 
 const sequelize = new Sequelize(
-    'todo',
-    'Daniilo',
-    'qwerty',
+    process.env.MYSQL_DATABASE,
+    process.env.MYSQL_USER,
+    process.env.MYSQL_PASSWORD,
     {
-        host: 'Localhost',
+        host: 'localhost',
         dialect: 'mysql',
         logging: false
     }

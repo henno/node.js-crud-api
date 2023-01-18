@@ -31,7 +31,7 @@ const limitCRUD = rateLimit({
 });
 
 //choose db
-const queries = require(process.env.dbSequelize)
+const queries = require(process.env.DB_SEQUELIZE)
 
 //http
 const server = http.createServer(app)
