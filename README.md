@@ -1,8 +1,14 @@
 A simple REST API written with Node.js/Express for performing CRUD operations
 
-Common setup:
-Clone the repo and install the dependencies.
+## Prerequisites
+Clone down this repository. You will need `node` and `npm` installed globally on your machine.
 
-https://github.com/TanelMr/node.js-crud-api.git
-cd node.js-crud-api
+## Dependencies installation:
+```
 npm install
+```
+
+## Starting the app
+```
+npm start
+```
