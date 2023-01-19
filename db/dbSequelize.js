@@ -164,7 +164,6 @@ async function checkIfUserExists(username) {
   await users.findOne({ where: { username: username } }).then((data) => {
     user = data != null;
   });
-  console.log(user);
   return user;
 }
 
@@ -212,7 +211,7 @@ const validateUser = (req, res) => {
 };
 
 const authorizeUser = (req, res) => {
-  if (checkToken(req.headers.authorization) === true) {
+  if (checkToken(req.headers.authorization)) {
     const credentials = {
       userID: req.body.id,
     };
@@ -247,7 +246,7 @@ const sendTodos = (req, res) => {
 };
 
 const createTodo = (req, res) => {
-  if (checkToken(req.headers.authorization) === true) {
+  if (checkToken(req.headers.authorization)) {
     const todo = {
       title: req.body.title,
       completed: req.body.completed,
@@ -272,7 +271,7 @@ const createTodo = (req, res) => {
 };
 
 const updateTodo = (req, res) => {
-  if (checkToken(req.headers.authorization) === true) {
+  if (checkToken(req.headers.authorization)) {
     const id = req.params.id;
 
     todos
@@ -296,7 +295,7 @@ const updateTodo = (req, res) => {
 };
 
 const deleteTodo = (req, res) => {
-  if (checkToken(req.headers.authorization) === true) {
+  if (checkToken(req.headers.authorization)) {
     const id = req.params.id;
 
     todos
