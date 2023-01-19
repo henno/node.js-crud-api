@@ -51,10 +51,10 @@ const io = new Server(server, {
 })
 
 io.on('connection', (socket) => {
-    // console.log('New user connected');
+    console.log('New user connected');
 
     socket.on('disconnect', () => {
-        // console.log('User disconnected');
+        console.log('User disconnected');
     });
 
     socket.onAny(() => {
@@ -62,13 +62,13 @@ io.on('connection', (socket) => {
     });
 });
 
-app.get('/tasks', queries.getTodos)
+app.get('/tasks', queries.sendTodos)
 app.post( '/tasks/:id', limitCRUDRequestsCount, queries.createTodo)
 app.put('/tasks/:id', limitCRUDRequestsCount, queries.updateTodo)
 app.delete('/tasks/:id', limitCRUDRequestsCount, queries.deleteTodo)
 app.post('/users/tasks', queries.authorizeUser)
 app.post('/users/login', limitLoginRequestsCount, queries.validateUser)
 app.post('/users/new-user', queries.createUser)
-app.get('/logs', queries.getLogs)
+app.get('/logs', queries.sendLogs)
 
 module.exports = app;

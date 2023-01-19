@@ -101,7 +101,7 @@ todos.beforeDestroy((instance, options) => {
     }
 );
 
-const getLogs = (req, res) => {
+const sendLogs = (req, res) => {
     res.send(logs);
 }
 
@@ -199,7 +199,7 @@ const authorizeUser = (req, res) => {
 
 }
 
-const getTodos = (req, res) => {
+const sendTodos = (req, res) => {
     todos.findAll()
         .then(data => {
             res.send(data);
@@ -302,13 +302,13 @@ const deleteTodo = (req, res) => {
 };
 
 module.exports = {
-    getTodos,
+    sendTodos,
     createTodo,
     updateTodo,
     deleteTodo,
     validateUser,
     authorizeUser,
     createUser,
-    getLogs
+    sendLogs
 }
 
