@@ -2,11 +2,11 @@ const Sequelize = require("sequelize");
 const {DataTypes} = require("sequelize");
 
 const sequelize = new Sequelize(
-    process.env.MYSQL_DATABASE,
-    process.env.MYSQL_USER,
-    process.env.MYSQL_PASSWORD,
+    process.env.DB_DATABASE,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
     {
-        host: process.env.MYSQL_HOST,
+        host: process.env.DB_HOST,
         dialect: 'mysql',
         logging: false
     }
@@ -114,7 +114,7 @@ let sessionToken;
 
 function checkToken(token) {
     if (token === undefined){
-        return null
+        return false
     }
     else {
         return sessionToken === token.replace('Bearer ', '');
@@ -122,6 +122,32 @@ function checkToken(token) {
 }
 
 // endpoints
+
+const createUser = (req, res) => {
+    users.findOne({ where: {username: req.body.username} })
+        .then(data => {
+            if (data != null){
+                res.status(409).send(
+                    {error : "Conflict, this user already exists!"}
+                )
+            }
+            else {
+                users.create({username: req.body.username, password: req.body.password})
+                    .then(() => {
+                        res.status(201).send(
+                            {success : "New user created successfully!"}
+                        )
+                    })
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Internal server error"
+            });
+        });
+}
+
 const validateUser = (req, res) => {
     const credentials = {
         username: req.body.username,
@@ -131,7 +157,7 @@ const validateUser = (req, res) => {
         .then(data => {
             if (data === null){
                 res.status(401).send(
-                    "Unauthorized. Please try logging in again."
+                    {error : "Unauthorized. Please try logging in again."}
                 )
             }
             else {
@@ -167,7 +193,7 @@ const authorizeUser = (req, res) => {
     }
     else {
         res.status(401).send(
-            "Unauthorized. Please try logging in again."
+            {error : "Unauthorized. Please try logging in again."}
         )
     }
 
@@ -193,24 +219,25 @@ const createTodo = (req, res) => {
         const todo = {
             title: req.body.title,
             completed: req.body.completed,
-            userID: req.body.userID
+            userID: req.params.id
         };
 
         todos.create(todo)
             .then(() => {
                 res.status(201).send(
-                    "Data created"
+                    {success : "Data created"}
                 )
             })
-            .catch(() => {
-                res.status(500).send(
-                    "Internal server error"
-                )
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                        err.message || "Internal server error"
+                });
             });
     }
     else {
         res.status(401).send(
-            "Unauthorized. Please try logging in again."
+            {error : "Unauthorized. Please try logging in again."}
         )
     }
 
@@ -228,18 +255,19 @@ const updateTodo = (req, res) => {
         })
             .then(() => {
                 res.status(202).send(
-                    "Data updated"
+                    {success : "Data updated"}
                 )
             })
-            .catch(() => {
-                res.status(500).send(
-                    "Internal server error"
-                )
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                        err.message || "Internal server error"
+                });
             });
     }
     else {
         res.status(401).send(
-            "Unauthorized. Please try logging in again."
+            {error : "Unauthorized. Please try logging in again."}
         )
     }
 };
@@ -256,18 +284,19 @@ const deleteTodo = (req, res) => {
         })
             .then(() => {
                 res.status(202).send(
-                    "Data updated"
+                    {success : "Data updated"}
                 )
             })
-            .catch(() => {
-                res.status(500).send(
-                    "Internal server error"
-                )
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                        err.message || "Internal server error"
+                });
             });
     }
     else {
         res.status(401).send(
-            "Unauthorized. Please try logging in again."
+            {error : "Unauthorized. Please try logging in again."}
         )
     }
 };
@@ -279,6 +308,7 @@ module.exports = {
     deleteTodo,
     validateUser,
     authorizeUser,
+    createUser,
     getLogs
 }
 
