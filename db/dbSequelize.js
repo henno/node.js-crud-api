@@ -102,7 +102,13 @@ todos.beforeDestroy((instance, options) => {
 );
 
 const sendLogs = (req, res) => {
-    res.send(logs);
+    if (logs === null)
+        res.status(500).send(
+            {error : "Internal server error"}
+        )
+    else {
+        res.send(logs);
+    }
 }
 
 // authorization
@@ -112,8 +118,12 @@ const jwt_secret =
 
 let sessionToken;
 
+function checkIfTokenExists (token) {
+    return token===undefined
+}
+
 function checkToken(token) {
-    if (token === undefined){
+    if (checkIfTokenExists(token)){
         return false
     }
     else {
@@ -122,7 +132,6 @@ function checkToken(token) {
 }
 
 // endpoints
-
 const createUser = (req, res) => {
     users.findOne({ where: {username: req.body.username} })
         .then(data => {
