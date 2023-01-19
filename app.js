@@ -14,7 +14,7 @@ const swaggerDocument = require('./swagger.json');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //rate limiter
-const limitLogin = rateLimit({
+const limitLoginRequestsCount = rateLimit({
     max: 5,
     windowMs: 2 * 60 * 1000,
     handler: function (req, res) {
@@ -22,7 +22,7 @@ const limitLogin = rateLimit({
     }
 });
 
-const limitCRUD = rateLimit({
+const limitCRUDRequestsCount = rateLimit({
     max: 10,
     windowMs: 60 * 1000,
     handler: function (req, res) {
@@ -63,11 +63,11 @@ io.on('connection', (socket) => {
 });
 
 app.get('/tasks', queries.getTodos)
-app.post( '/tasks/:id', limitCRUD, queries.createTodo)
-app.put('/tasks/:id', limitCRUD, queries.updateTodo)
-app.delete('/tasks/:id', limitCRUD, queries.deleteTodo)
+app.post( '/tasks/:id', limitCRUDRequestsCount, queries.createTodo)
+app.put('/tasks/:id', limitCRUDRequestsCount, queries.updateTodo)
+app.delete('/tasks/:id', limitCRUDRequestsCount, queries.deleteTodo)
 app.post('/users/tasks', queries.authorizeUser)
-app.post('/users/login', limitLogin, queries.validateUser)
+app.post('/users/login', limitLoginRequestsCount, queries.validateUser)
 app.post('/users/new-user', queries.createUser)
 app.get('/logs', queries.getLogs)
 
