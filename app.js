@@ -31,14 +31,14 @@ const limitCRUD = rateLimit({
 });
 
 //choose db
-const queries = require(process.env.DB_SEQUELIZE)
+const queries = require('./db/dbSequelize')
 
 //http
 const server = http.createServer(app)
 app.use(cors({
     origin: '*'
 }));
-const port = 3001;
+const port = process.env.PORT;
 server.listen(port, () => {
     console.log(`Server started on port: ${port}`);
 });
@@ -62,12 +62,13 @@ io.on('connection', (socket) => {
     });
 });
 
-app.get('/', queries.getTodos)
-app.post( '/', limitCRUD, queries.createTodo)
-app.put('/:id', limitCRUD, queries.updateTodo)
-app.delete('/:id', limitCRUD, queries.deleteTodo)
-app.post('/login', limitLogin, queries.validateUser)
-app.post('/user', queries.authorizeUser)
+app.get('/tasks', queries.getTodos)
+app.post( '/tasks/:id', limitCRUD, queries.createTodo)
+app.put('/tasks/:id', limitCRUD, queries.updateTodo)
+app.delete('/tasks/:id', limitCRUD, queries.deleteTodo)
+app.post('/users/tasks', queries.authorizeUser)
+app.post('/users/login', limitLogin, queries.validateUser)
+app.post('/users/new-user', queries.createUser)
 app.get('/logs', queries.getLogs)
 
 module.exports = app;

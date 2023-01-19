@@ -17,7 +17,7 @@
     }
   ],
   "paths": {
-    "/": {
+    "/tasks": {
       "summary": "Get all todo items.",
       "description": "Endpoint to get all the todo items.",
       "get": {
@@ -33,7 +33,7 @@
                 }
               }
             },
-            "description": "Got all todos successfully. "
+            "description": "Got all todo items."
           },
           "500": {
             "content": {
@@ -59,119 +59,9 @@
         "operationId": "getAllTodos",
         "summary": "Get all todo items.",
         "description": "Gets all the todo items from the server."
-      },
-      "post": {
-        "requestBody": {
-          "description": "Request body to add a new todo item.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/createNewTodo"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/res201"
-                }
-              }
-            },
-            "description": "New todolist item created."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error401"
-                }
-              }
-            },
-            "description": "User is not authorized."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error500"
-                }
-              }
-            },
-            "description": "Internal server error."
-          }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
-        "operationId": "createNewTodo",
-        "summary": "Add a new todo item.",
-        "description": "Sends a new todo item to the server."
       }
     },
-    "/user": {
-      "summary": "Get user todo list.",
-      "description": "Gets a specific users todolist.",
-      "post": {
-        "requestBody": {
-          "description": "Request body to get specific users todo list.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/userTodos"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/todos"
-                }
-              }
-            },
-            "description": "User todolist fetched."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error401"
-                }
-              }
-            },
-            "description": "Unauthorized to get the list."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error500"
-                }
-              }
-            },
-            "description": "Internal server error."
-          }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
-        "operationId": "getUserTodos",
-        "summary": "Get user todos.",
-        "description": "Get sepcific users todo list from the server."
-      }
-    },
-    "/{id}": {
+    "/tasks/{id}": {
       "summary": "Edit or delete the todo items.",
       "description": "Endpoint to edit or delete the todo items.",
       "put": {
@@ -225,6 +115,58 @@
         "operationId": "updateTodoItem",
         "summary": "Update todos.",
         "description": "Send a request to server to update a single todo item."
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createNewTodo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/res201"
+                }
+              }
+            },
+            "description": "New todo created."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error401"
+                }
+              }
+            },
+            "description": "User is unauthorized to create todo."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "addNewTodo",
+        "summary": "Add a new todo item.",
+        "description": "Sends a new todo item to the server."
       },
       "delete": {
         "responses": {
@@ -285,7 +227,7 @@
         }
       ]
     },
-    "/login": {
+    "/users/login": {
       "summary": "Log user in.",
       "description": "Endpoint to log user in and give authorization to edit the todo items.",
       "post": {
@@ -293,7 +235,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/login"
+                "$ref": "#/components/schemas/userCredentials"
               }
             }
           },
@@ -358,6 +300,113 @@
         "operationId": "getServerLogs",
         "summary": "Get logs from the server.",
         "description": "Get an array of logs from the server."
+      }
+    },
+    "/users/tasks": {
+      "summary": "Get users todo list.",
+      "description": "Gets a specific users todo list.",
+      "post": {
+        "requestBody": {
+          "description": "Request body to get specific users todo list.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userTodos"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/todos"
+                }
+              }
+            },
+            "description": "User todolist fetched."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error401"
+                }
+              }
+            },
+            "description": "Unauthorized to get the list."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "getUserTodos",
+        "summary": "Get user todos.",
+        "description": "Get sepcific users todo list from the server."
+      }
+    },
+    "/users/new-user": {
+      "summary": "Create a new user.",
+      "description": "Enpoint to create new users.",
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userCredentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/res201Usercreated"
+                }
+              }
+            },
+            "description": "New user created."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error409"
+                }
+              }
+            },
+            "description": "User already exists."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error500"
+                }
+              }
+            },
+            "description": "Internal server error."
+          }
+        },
+        "operationId": "createNewUser",
+        "summary": "Create new user."
       }
     }
   },
@@ -466,25 +515,6 @@
           "id": 1
         }
       },
-      "login": {
-        "title": "Root Type for login",
-        "description": "Data to log in a user.",
-        "type": "object",
-        "properties": {
-          "username": {
-            "description": "Users username.",
-            "type": "string"
-          },
-          "password": {
-            "description": "Users password.",
-            "type": "string"
-          }
-        },
-        "example": {
-          "username": "User1",
-          "password": "Password1"
-        }
-      },
       "logs": {
         "title": "Root Type for logs",
         "description": "An array of logs.",
@@ -542,22 +572,63 @@
       "error401": {
         "description": "Errormessage for unauthorized status.",
         "type": "object",
-        "example": "\"Unauthorized. Please try logging in again.\""
+        "example": {
+          "error": "Unauthorized. Please try logging in again."
+        }
       },
       "error500": {
         "description": "Errormessage for internal server error.",
         "type": "object",
-        "example": "\"Internal server error.\""
+        "example": {
+          "error": "Internal server error."
+        }
       },
       "res201": {
         "description": "Response for http 201.",
         "type": "object",
-        "example": "\"Data created\""
+        "example": {
+          "success": "Data created"
+        }
       },
       "res202": {
         "description": "Response for http 202.",
         "type": "object",
-        "example": "\"Data updated\""
+        "example": {
+          "success": "Data updated"
+        }
+      },
+      "error409": {
+        "description": "Errormessage for trying to create a user that already exists.",
+        "type": "object",
+        "example": {
+          "error": "Conflict, this user already exists!"
+        }
+      },
+      "userCredentials": {
+        "title": "Root Type for login",
+        "description": "Data for logging in or creating a new user",
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "Users username.",
+            "type": "string"
+          },
+          "password": {
+            "description": "Users password.",
+            "type": "string"
+          }
+        },
+        "example": {
+          "username": "User1",
+          "password": "Password1"
+        }
+      },
+      "res201Usercreated": {
+        "description": "Data for new user created success message",
+        "type": "object",
+        "example": {
+          "success": "New user created successfully!"
+        }
       }
     },
     "securitySchemes": {
