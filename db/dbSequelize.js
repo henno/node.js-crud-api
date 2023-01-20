@@ -68,20 +68,15 @@ sequelize
 // logging
 const logs = [];
 
-const saveLogs = (data, method, firstValue, secondValue) => {
-  const subLog = [];
-
-  let date = JSON.stringify(data.get("updatedAt"));
+function formatDate(date) {
   let newDate = date.replaceAll(/T/g, ", ").replaceAll(/"/g, "");
+  return newDate.slice(0, 17);
+}
 
-  subLog.push(
-    newDate.slice(0, 17),
-    method,
-    data.get("userID"),
-    firstValue,
-    secondValue
-  );
-
+const saveLogs = (data, method, firstValue, secondValue) => {
+  let date = formatDate(JSON.stringify(data.get("updatedAt")));
+  const subLog = [];
+  subLog.push(date, method, data.get("userID"), firstValue, secondValue);
   logs.push(subLog);
 };
 
