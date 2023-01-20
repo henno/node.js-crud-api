@@ -73,7 +73,7 @@ function formatDate(date) {
   return newDate.slice(0, 17);
 }
 
-const saveLogs = (data, method, firstValue, secondValue) => {
+const saveLogs = ({ data, method, firstValue, secondValue }) => {
   let date = formatDate(JSON.stringify(data.get("updatedAt")));
   const subLog = [];
   subLog.push(date, method, data.get("userID"), firstValue, secondValue);
@@ -81,51 +81,49 @@ const saveLogs = (data, method, firstValue, secondValue) => {
 };
 
 todos.beforeCreate((instance, options) => {
-  const method = "POST";
-  console.log(instance.get("title"));
   if (instance.get("title") === "" && instance.get("completed") === "") {
     return null;
   } else {
-    saveLogs(
-      instance,
-      method,
-      "Added " + JSON.stringify(instance.get("title")),
-      "Added " + JSON.stringify(instance.get("completed"))
-    );
+    saveLogs({
+      data: instance,
+      method: "POST",
+      firstValue: "Added " + JSON.stringify(instance.get("title")),
+      secondValue: "Added " + JSON.stringify(instance.get("completed")),
+    });
   }
 });
 
 todos.beforeUpdate((instance, options) => {
-  const method = "PUT";
   if (
     instance.previous("title") === instance.get("title") &&
     instance.previous("completed") === instance.get("completed")
   ) {
     return null;
   } else {
-    saveLogs(
-      instance,
-      method,
-      "Changed " +
+    saveLogs({
+      data: instance,
+      method: "PUT",
+      firstValue:
+        "Changed " +
         JSON.stringify(instance.previous("title")) +
         " to " +
         JSON.stringify(instance.get("title")),
-      "Changed " +
+      secondValue:
+        "Changed " +
         JSON.stringify(instance.previous("completed")) +
         " to " +
-        JSON.stringify(instance.get("completed"))
-    );
+        JSON.stringify(instance.get("completed")),
+    });
   }
 });
 
 todos.beforeDestroy((instance, options) => {
-  const method = "DELETE";
-  saveLogs(
-    instance,
-    method,
-    "Deleted " + JSON.stringify(instance.previous("title")),
-    "Deleted " + JSON.stringify(instance.previous("completed"))
-  );
+  saveLogs({
+    data: instance,
+    method: "DELETE",
+    firstValue: "Deleted " + JSON.stringify(instance.previous("title")),
+    secondValue: "Deleted " + JSON.stringify(instance.previous("completed")),
+  });
 });
 
 const sendLogs = (req, res) => {
