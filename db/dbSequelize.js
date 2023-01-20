@@ -206,7 +206,7 @@ const validateUser = (req, res) => {
 const authorizeUser = (req, res) => {
   if (checkToken(req.headers.authorization)) {
     const credentials = {
-      userID: req.body.id,
+      userID: req.params.id,
     };
     todos
       .findAll({ where: [credentials] })
@@ -219,9 +219,7 @@ const authorizeUser = (req, res) => {
         });
       });
   } else {
-    res
-      .status(401)
-      .send({ error: "Unauthorized. Please try logging in again." });
+    res.status(403).send({ error: "Forbidden! User has no authorization!" });
   }
 };
 
@@ -257,9 +255,7 @@ const createTodo = (req, res) => {
         });
       });
   } else {
-    res
-      .status(401)
-      .send({ error: "Unauthorized. Please try logging in again." });
+    res.status(403).send({ error: "Forbidden! User has no authorization!" });
   }
 };
 
@@ -281,9 +277,7 @@ const updateTodo = (req, res) => {
         });
       });
   } else {
-    res
-      .status(401)
-      .send({ error: "Unauthorized. Please try logging in again." });
+    res.status(403).send({ error: "Forbidden! User has no authorization!" });
   }
 };
 
@@ -305,9 +299,7 @@ const deleteTodo = (req, res) => {
         });
       });
   } else {
-    res
-      .status(401)
-      .send({ error: "Unauthorized. Please try logging in again." });
+    res.status(403).send({ error: "Forbidden! User has no authorization!" });
   }
 };
 
