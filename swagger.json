@@ -10,17 +10,30 @@
       "email": "tanel.marjama@voco.ee"
     }
   },
-  "servers": [
-    {
-      "url": "http://localhost:3001",
-      "description": "Development server"
-    }
-  ],
   "paths": {
     "/tasks": {
       "summary": "Get all todo items.",
       "description": "Endpoint to get all the todo items.",
       "get": {
+        "parameters": [
+          {
+            "examples": {
+              "UserID": {
+                "value": "1"
+              },
+              "NoUserID": {
+                "value": ""
+              }
+            },
+            "name": "UserID",
+            "description": "Parameter for UserID",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -33,7 +46,17 @@
                 }
               }
             },
-            "description": "Got all todo items."
+            "description": "Got todo items."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error403"
+                }
+              }
+            },
+            "description": "Forbidden to get users todo list."
           },
           "500": {
             "content": {
@@ -44,21 +67,16 @@
               }
             },
             "description": "Internal server error."
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            },
-            "description": "unexpected error"
           }
         },
-        "operationId": "getAllTodos",
-        "summary": "Get all todo items.",
-        "description": "Gets all the todo items from the server."
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "operationId": "getTodos",
+        "summary": "Get todo items.",
+        "description": "Gets all the todo items or get a specific users todo items (depending on the parameter)."
       }
     },
     "/logs": {
@@ -99,6 +117,23 @@
           },
           "required": true
         },
+        "parameters": [
+          {
+            "examples": {
+              "TaskID": {
+                "value": "3"
+              }
+            },
+            "name": "id",
+            "description": "Parameter for TaskID",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "202": {
             "content": {
@@ -151,6 +186,23 @@
           },
           "required": true
         },
+        "parameters": [
+          {
+            "examples": {
+              "UserID": {
+                "value": "1"
+              }
+            },
+            "name": "id",
+            "description": "Parameter for UserID",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "201": {
             "content": {
@@ -193,6 +245,23 @@
         "description": "Sends a new todo item to the server."
       },
       "delete": {
+        "parameters": [
+          {
+            "examples": {
+              "TaskID": {
+                "value": "1"
+              }
+            },
+            "name": "id",
+            "description": "Parameter for TaskID.",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "202": {
             "content": {
@@ -233,23 +302,7 @@
         "operationId": "deleteTodoItem",
         "summary": "Delete todo item.",
         "description": "Send a request to server to delete a todo item."
-      },
-      "parameters": [
-        {
-          "examples": {
-            "Example of a id parameter": {
-              "value": "3"
-            }
-          },
-          "name": "id",
-          "description": "Parameter for id ",
-          "schema": {
-            "type": "integer"
-          },
-          "in": "path",
-          "required": true
-        }
-      ]
+      }
     },
     "/sessions": {
       "summary": "Log user in.",
@@ -351,66 +404,6 @@
         "operationId": "createNewUser",
         "summary": "Create new user."
       }
-    },
-    "/tasks?UserID=": {
-      "summary": "Get users todo items.",
-      "get": {
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/todos"
-                }
-              }
-            },
-            "description": "Users todo list fetched successfully."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error403"
-                }
-              }
-            },
-            "description": "No authorization to get users todo list."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error500"
-                }
-              }
-            },
-            "description": "Internal server error."
-          }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
-        "operationId": "getUsersToDoItems",
-        "summary": "Get users todo items."
-      },
-      "parameters": [
-        {
-          "examples": {
-            "UserID example": {
-              "value": "1"
-            }
-          },
-          "name": "UserID",
-          "description": "UserID query parameter.",
-          "schema": {
-            "type": "integer"
-          },
-          "in": "query",
-          "required": true
-        }
-      ]
     }
   },
   "components": {
@@ -427,17 +420,11 @@
           "completed": {
             "description": "Completed value",
             "type": "string"
-          },
-          "userID": {
-            "format": "int32",
-            "description": "User ID.",
-            "type": "integer"
           }
         },
         "example": {
           "title": "Jaluta koeraga ",
-          "completed": "Veel mitte",
-          "userID": 1
+          "completed": "Veel mitte"
         }
       },
       "updateTodo": {
@@ -445,11 +432,6 @@
         "description": "Data to update the todo list.",
         "type": "object",
         "properties": {
-          "id": {
-            "format": "int32",
-            "description": "ID of the task to be updated.",
-            "type": "integer"
-          },
           "title": {
             "description": "Title value.",
             "type": "string"
@@ -460,7 +442,6 @@
           }
         },
         "example": {
-          "id": 143,
           "title": "Jaluta koeraga ",
           "completed": "Ei ole "
         }
