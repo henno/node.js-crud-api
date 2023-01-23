@@ -206,8 +206,9 @@ const validateUser = (req, res) => {
 const sendTodos = (req, res) => {
   let userID = req.query.UserID;
   let token = req.headers.authorization;
+  console.log(userID);
 
-  switch (checkIfTokenExists(token)) {
+  switch (userID === undefined) {
     case false:
       if (checkToken(token)) {
         const credentials = {
