@@ -65,12 +65,11 @@ io.on("connection", (socket) => {
 });
 
 app.get("/tasks", queries.sendTodos);
-app.post("/sessions/tasks/:id", limitCRUDRequestsCount, queries.createTodo);
-app.put("/sessions/tasks/:id", limitCRUDRequestsCount, queries.updateTodo);
-app.delete("/sessions/tasks/:id", limitCRUDRequestsCount, queries.deleteTodo);
-app.get("/sessions/tasks/:id", queries.authorizeUser);
-app.post("/users/login", limitLoginRequestsCount, queries.validateUser);
-app.post("/users/new-user", queries.createUser);
+app.post("/tasks/:id", limitCRUDRequestsCount, queries.createTodo);
+app.put("/tasks/:id", limitCRUDRequestsCount, queries.updateTodo);
+app.delete("/tasks/:id", limitCRUDRequestsCount, queries.deleteTodo);
+app.post("/sessions", limitLoginRequestsCount, queries.validateUser);
+app.post("/users", queries.createUser);
 app.get("/logs", queries.sendLogs);
 
 module.exports = app;

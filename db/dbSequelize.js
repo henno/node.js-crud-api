@@ -203,37 +203,45 @@ const validateUser = (req, res) => {
     });
 };
 
-const authorizeUser = (req, res) => {
-  if (checkToken(req.headers.authorization)) {
-    const credentials = {
-      userID: req.params.id,
-    };
-    todos
-      .findAll({ where: [credentials] })
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Internal server error",
-        });
-      });
-  } else {
-    res.status(403).send({ error: "Forbidden! User has no authorization!" });
-  }
-};
-
 const sendTodos = (req, res) => {
-  todos
-    .findAll()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Internal server error",
-      });
-    });
+  let userID = req.query.UserID;
+  let token = req.headers.authorization;
+
+  switch (checkIfTokenExists(token)) {
+    case false:
+      if (checkToken(token)) {
+        const credentials = {
+          userID: userID,
+        };
+        todos
+          .findAll({ where: [credentials] })
+          .then((data) => {
+            res.send(data);
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message: err.message || "Internal server error",
+            });
+          });
+      } else {
+        res
+          .status(403)
+          .send({ error: "Forbidden! User has no authorization!" });
+      }
+      break;
+    case true:
+      todos
+        .findAll()
+        .then((data) => {
+          res.send(data);
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: err.message || "Internal server error",
+          });
+        });
+      break;
+  }
 };
 
 const createTodo = (req, res) => {
@@ -309,7 +317,6 @@ module.exports = {
   updateTodo,
   deleteTodo,
   validateUser,
-  authorizeUser,
   createUser,
   sendLogs,
 };
