@@ -140,19 +140,19 @@ const jwt_secret =
 
 let sessionToken;
 
-function checkIfTokenExists(token) {
+function tokenExists(token) {
   return token === undefined;
 }
 
-function checkToken(token) {
-  if (checkIfTokenExists(token)) {
+function isValidToken(token) {
+  if (tokenExists(token)) {
     return false;
   } else {
     return sessionToken === token.replace("Bearer ", "");
   }
 }
 
-async function checkIfUserExists(username) {
+async function userExists(username) {
   let user;
   await users.findOne({ where: { username: username } }).then((data) => {
     user = data != null;
@@ -161,7 +161,7 @@ async function checkIfUserExists(username) {
 }
 
 const createUser = async (req, res) => {
-  if ((await checkIfUserExists(req.body.username)) === false) {
+  if ((await userExists(req.body.username)) === false) {
     users
       .create({ username: req.body.username, password: req.body.password })
       .then(() => {
@@ -210,7 +210,7 @@ const sendTodos = (req, res) => {
 
   switch (userID === undefined) {
     case false:
-      if (checkToken(token)) {
+      if (isValidToken(token)) {
         const credentials = {
           userID: userID,
         };
@@ -246,7 +246,7 @@ const sendTodos = (req, res) => {
 };
 
 const createTodo = (req, res) => {
-  if (checkToken(req.headers.authorization)) {
+  if (isValidToken(req.headers.authorization)) {
     const todo = {
       title: req.body.title,
       completed: req.body.completed,
@@ -269,7 +269,7 @@ const createTodo = (req, res) => {
 };
 
 const updateTodo = (req, res) => {
-  if (checkToken(req.headers.authorization)) {
+  if (isValidToken(req.headers.authorization)) {
     const id = req.params.id;
 
     todos
@@ -291,7 +291,7 @@ const updateTodo = (req, res) => {
 };
 
 const deleteTodo = (req, res) => {
-  if (checkToken(req.headers.authorization)) {
+  if (isValidToken(req.headers.authorization)) {
     const id = req.params.id;
 
     todos
